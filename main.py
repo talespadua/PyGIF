@@ -44,9 +44,9 @@ def add_edit_menu(menu):
 
 root = Tk()
 
-images = []
+image_names = []
 
-create_window(root, images)
+create_window(root, image_names)
 
 root.mainloop()
 
