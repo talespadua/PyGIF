@@ -7,7 +7,7 @@ from Tkinter import *
 import tkMessageBox, tkFileDialog
 
 def add_images(root, images):
-    files = tkFileDialog.askopenfilenames(parent=root, title='Choose a File')
+    files = tkFileDialog.askopenfilenames(parent=root, title='Choose a File', filetypes=[("Image files", "*.jpg")])
     if files is not None:
         for f in files:
             images.append(f)
@@ -18,18 +18,21 @@ def doNothing():
 def printimages(images):
     print images
 
-def create_window(root, images):
+def create_window(images):
+    root = Tk()
     menu = Menu(root)
     root.config(menu=menu)
     root.geometry("500x500")
     add_new_subMenu(menu, images)
     add_edit_menu(menu)
+    add_toolbar(root, images)
+    root.mainloop()
 
 def add_new_subMenu(menu, images):
     subMenu = Menu(menu)
     menu.add_cascade(label="File", menu=subMenu)
     subMenu.add_command(label="New", command=lambda: printimages(images))
-    subMenu.add_command(label="Select Images", command=lambda: add_images(root, images))
+    subMenu.add_command(label="Select Images", command=lambda: add_images(menu, images))
     subMenu.add_separator()
     subMenu.add_command(label="Exit", command=doNothing)
 
@@ -42,21 +45,31 @@ def add_edit_menu(menu):
     editMenu.add_separator()
     editMenu.add_command(label="Exit", command=doNothing)
 
-root = Tk()
+def add_toolbar(root, images):
+    toolbar = Frame(root, borderwidth = 3, relief = RIDGE)
+    add_images_button = Button(toolbar, text="Select Images", command=lambda: add_images(root, images))
+    print_imagenames_button = Button(toolbar, text="Print Image Names", command=lambda: printimages(images))
 
-image_names = []
+    add_images_button.pack(side=LEFT, padx=2, pady=2)
+    print_imagenames_button.pack(side=LEFT, padx=2, pady=2)
+    toolbar.pack(side=TOP, fill=X)
 
-create_window(root, image_names)
-
-root.mainloop()
+def main():
 
 
-#*********** GIF PART**********************
-file_names = sorted((fn for fn in os.listdir('.') if fn.endswith('.jpg')))
+    image_names = []
 
-images = [PIL.Image.open(fn) for fn in file_names]
+    create_window(image_names)
 
-filename = "mari_monkey.GIF"
-writeGif(filename, images, duration=0.2)
+    #*********** GIF PART**********************
+    file_names = sorted((fn for fn in os.listdir('.') if fn.endswith('.jpg')))
 
-#*********** END GIF PART *****************
+    images = [PIL.Image.open(fn) for fn in file_names]
+
+    filename = "mari_monkey.GIF"
+    writeGif(filename, images, duration=0.2)
+
+    #*********** END GIF PART *****************
+
+if __name__ == "__main__":
+    main()
