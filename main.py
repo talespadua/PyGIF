@@ -8,9 +8,15 @@ import tkMessageBox, tkFileDialog
 
 def add_images(root, images):
     files = tkFileDialog.askopenfilenames(parent=root, title='Choose a File', filetypes=[("Image files", "*.jpg")])
+    files = root.tk.splitlist(files)
     if files is not None:
         for f in files:
-            images.append(f)
+            try:
+                image = PIL.Image.open(f)
+                images.append(image)
+            except:
+                print "deu ruim"
+
 
 def doNothing():
     print("Lerolero")
@@ -18,15 +24,10 @@ def doNothing():
 def printimages(images):
     print images
 
-def create_window(images):
-    root = Tk()
+def create_menu(root):
     menu = Menu(root)
-    root.config(menu=menu)
-    root.geometry("500x500")
-    add_new_subMenu(menu, images)
-    add_edit_menu(menu)
-    add_toolbar(root, images)
-    root.mainloop()
+
+    return menu
 
 def add_new_subMenu(menu, images):
     subMenu = Menu(menu)
@@ -37,34 +38,36 @@ def add_new_subMenu(menu, images):
     subMenu.add_command(label="Exit", command=doNothing)
 
 
-def add_edit_menu(menu):
-    editMenu = Menu(menu)
-    menu.add_cascade(label="File", menu=editMenu)
-    editMenu.add_command(label="New", command=doNothing)
-    editMenu.add_command(label="Lero", command=doNothing)
-    editMenu.add_separator()
-    editMenu.add_command(label="Exit", command=doNothing)
-
 def add_toolbar(root, images):
     toolbar = Frame(root, borderwidth = 3, relief = RIDGE)
     add_images_button = Button(toolbar, text="Select Images", command=lambda: add_images(root, images))
     print_imagenames_button = Button(toolbar, text="Print Image Names", command=lambda: printimages(images))
+    writegifbutton = Button(toolbar, text="WriteGif", command=doNothing)
 
     add_images_button.pack(side=LEFT, padx=2, pady=2)
     print_imagenames_button.pack(side=LEFT, padx=2, pady=2)
+    writegifbutton.pack(side=LEFT, padx=2, pady=2)
     toolbar.pack(side=TOP, fill=X)
 
+# def add_save_gif_button(filename, images, du):
+#     save_gif_button
+
 def main():
+    images = []
+    root = Tk()
+    root.geometry("500x500")
 
+    menu = create_menu(root)
+    root.config(menu=menu)
 
-    image_names = []
+    add_new_subMenu(menu, images)
 
-    create_window(image_names)
+    add_toolbar(root, images)
+    root.mainloop()
+
 
     #*********** GIF PART**********************
     file_names = sorted((fn for fn in os.listdir('.') if fn.endswith('.jpg')))
-
-    images = [PIL.Image.open(fn) for fn in file_names]
 
     filename = "mari_monkey.GIF"
     writeGif(filename, images, duration=0.2)
