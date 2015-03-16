@@ -2,7 +2,7 @@ __author__ = 'tales.cpadua'
 
 from images2gif import writeGif
 import PIL.Image
-import os
+import os, sys
 from Tkinter import *
 import tkMessageBox, tkFileDialog
 
@@ -43,11 +43,11 @@ def add_new_subMenu(menu, images):
     subMenu.add_command(label="Exit", command=doNothing)
 
 
-def add_toolbar(root, images, imagename):
+def add_toolbar(root, images, imagename, altura, largura):
     toolbar = Frame(root, borderwidth = 3, relief = RIDGE)
     add_images_button = Button(toolbar, text="Select Images", command=lambda: add_images(root, images))
     print_imagenames_button = Button(toolbar, text="Print Image Names", command=lambda: printimages(images))
-    writegifbutton = Button(toolbar, text="WriteGif", command=lambda: save_gif(imagename, images))
+    writegifbutton = Button(toolbar, text="WriteGif", command=lambda: save_gif(imagename, images, altura, largura))
 
     #writeGif("teste.gif", images, duration=0.2)
 
@@ -56,15 +56,23 @@ def add_toolbar(root, images, imagename):
     writegifbutton.pack(side=LEFT, padx=2, pady=2)
     toolbar.pack(side=TOP, fill=X)
 
-def add_input(root, imagename):
-    nameLabel = Label(root, text="Nome do gif")
-    nameLabel.pack()
+def add_input(root, imagename, altura, largura):
+    nameLabel = Label(root, text="Nome do gif").pack()
+    name_input = Entry(root, textvariable=imagename).pack()
 
-    name_input = Entry(root, textvariable=imagename)
-    name_input.pack()
+    alturaLabel = Label(root, text="Altura").pack()
+    altura = Entry(root, textvariable=altura).pack()
 
+    larguraLabel = Label(root, text="Largura").pack()
+    largura_input = Entry(root, textvariable=largura).pack()
 
-def save_gif(imagename, images):
+def save_gif(imagename, images, altura, largura):
+    if altura.get() is not None and largura.get() is not None:
+        int_altura = int(altura.get())
+        int_largura = int(largura.get())
+        for i in images:
+            i.thumbnail((int_altura,int_largura), PIL.Image.ANTIALIAS)
+
     nome = imagename.get() + ".gif"
     writeGif(nome, images, duration=0.2)
 
@@ -74,15 +82,17 @@ def main():
     root.title("Gif 4 Me")
     root.geometry("500x500")
 
-    imagename = StringVar()
+    imagename = StringVar(None)
+    altura = StringVar(None)
+    largura = StringVar(None)
 
     menu = create_menu(root)
     root.config(menu=menu)
 
     add_new_subMenu(menu, images)
-    add_toolbar(root, images, imagename)
+    add_toolbar(root, images, imagename, altura, largura)
 
-    add_input(root, imagename)
+    add_input(root, imagename, altura, largura)
 
     root.mainloop()
 
