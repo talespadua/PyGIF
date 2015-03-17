@@ -43,11 +43,11 @@ def add_new_subMenu(menu, images):
     subMenu.add_command(label="Exit", command=doNothing)
 
 
-def add_toolbar(root, images, imagename, altura, largura):
+def add_toolbar(root, images, imagename, altura, largura, duracao):
     toolbar = Frame(root, borderwidth = 3, relief = RIDGE)
     add_images_button = Button(toolbar, text="Select Images", command=lambda: add_images(root, images))
     print_imagenames_button = Button(toolbar, text="Print Image Names", command=lambda: printimages(images))
-    writegifbutton = Button(toolbar, text="WriteGif", command=lambda: save_gif(imagename, images, altura, largura))
+    writegifbutton = Button(toolbar, text="WriteGif", command=lambda: save_gif(imagename, images, altura, largura, duracao))
 
     #writeGif("teste.gif", images, duration=0.2)
 
@@ -56,7 +56,7 @@ def add_toolbar(root, images, imagename, altura, largura):
     writegifbutton.pack(side=LEFT, padx=2, pady=2)
     toolbar.pack(side=TOP, fill=X)
 
-def add_input(root, imagename, altura, largura):
+def add_input(root, imagename, altura, largura, duracao):
     nameLabel = Label(root, text="Nome do gif").pack()
     name_input = Entry(root, textvariable=imagename).pack()
 
@@ -66,15 +66,35 @@ def add_input(root, imagename, altura, largura):
     larguraLabel = Label(root, text="Largura").pack()
     largura_input = Entry(root, textvariable=largura).pack()
 
-def save_gif(imagename, images, altura, largura):
-    if altura.get() is not None and largura.get() is not None:
-        int_altura = int(altura.get())
-        int_largura = int(largura.get())
-        for i in images:
-            i.thumbnail((int_altura,int_largura), PIL.Image.ANTIALIAS)
+    duracaoLabel = Label(root, text="FPS (Max 1)").pack()
+    duracao_input = Entry(root, textvariable=duracao).pack()
 
+def save_gif(imagename, images, altura, largura, duracao):
+    # if altura.get() is not None and largura.get() is not None:
+
+    try:
+        int_altura = int(altura.get())
+    except:
+        int_altura = 500
+
+    try:
+        int_largura = int(largura.get())
+    except:
+        int_largura = 300
+
+    try:
+        duracao = float(duracao.get())
+        if(duracao > 1):
+            duracao = 1
+    except:
+        duracao = 0.2
+
+    resize_images = []
+    for i in images:
+        resize_images.append(i.resize((int_largura, int_altura), PIL.Image.ANTIALIAS))
     nome = imagename.get() + ".gif"
-    writeGif(nome, images, duration=0.2)
+    writeGif(nome, resize_images, duration=duracao)
+    return
 
 def main():
     images = []
@@ -85,25 +105,16 @@ def main():
     imagename = StringVar(None)
     altura = StringVar(None)
     largura = StringVar(None)
+    duracao = StringVar(None)
 
     menu = create_menu(root)
     root.config(menu=menu)
 
     add_new_subMenu(menu, images)
-    add_toolbar(root, images, imagename, altura, largura)
+    add_toolbar(root, images, imagename, altura, largura, duracao)
 
-    add_input(root, imagename, altura, largura)
-
+    add_input(root, imagename, altura, largura, duracao)
     root.mainloop()
-
-
-    # #*********** GIF PART**********************
-    # file_names = sorted((fn for fn in os.listdir('.') if fn.endswith('.jpg')))
-    #
-    # filename = "mari_monkey.GIF"
-    # writeGif(filename, images, duration=0.2)
-
-    #*********** END GIF PART *****************
 
 if __name__ == "__main__":
     main()
