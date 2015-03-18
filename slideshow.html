@@ -1,0 +1,24 @@
+<head>
+<script type="text/javascript">
+var image1 = new Image()
+image1.src = "gifs/dfghfhfg.gif"
+var image2 = new Image()
+image2.src = "gifs/teste2.gif"
+</script>
+</head>
+<body>
+<p><img src="images/dfghfhfg.jpg" width="300" height="500" name="slide" /></p>
+<script type="text/javascript">
+        var step=1;
+        function slideit()
+        {
+            document.images.slide.src = eval("image"+step+".src");
+            if(step<2)
+                step++;
+            else
+                step=1;
+            setTimeout("slideit()",2500);
+        }
+        slideit();
+</script>
+</body>
